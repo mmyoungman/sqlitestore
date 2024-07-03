@@ -223,7 +223,7 @@ func (m *SqliteStore) Delete(r *http.Request, w http.ResponseWriter, session *se
 }
 
 func (m *SqliteStore) save(session *sessions.Session) error {
-	if session.IsNew == true {
+	if session.IsNew {
 		return m.insert(session)
 	}
 	var createdOn time.Time
@@ -267,9 +267,9 @@ func (m *SqliteStore) load(session *sessions.Session) error {
 	if scanErr != nil {
 		return scanErr
 	}
-	if sess.expiresOn.Sub(time.Now()) < 0 {
+	if time.Until(sess.expiresOn) < 0 {
 		log.Printf("Session expired on %s, but it is %s now.", sess.expiresOn, time.Now())
-		return errors.New("Session expired")
+		return errors.New("session expired")
 	}
 	err := securecookie.DecodeMulti(session.Name(), sess.data, &session.Values, m.Codecs...)
 	if err != nil {
