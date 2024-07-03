@@ -281,3 +281,11 @@ func (m *SqliteStore) load(session *sessions.Session) error {
 	return nil
 
 }
+
+func (m *SqliteStore) MaxLength(l int) {
+	for _, c := range m.Codecs {
+		if codec, ok := c.(*securecookie.SecureCookie); ok {
+			codec.MaxLength(l)
+		}
+	}
+}
